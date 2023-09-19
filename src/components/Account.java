@@ -40,7 +40,7 @@ public abstract class Account {
     }
 
     // Méthode abstraite pour modifier le solde en fonction du type de flux
-    public abstract void modifyBalance(double amount, String flowType);
+    public abstract void modifyBalance(Flow flow);
 
     @Override
     public String toString() {
