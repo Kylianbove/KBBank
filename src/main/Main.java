@@ -1,6 +1,10 @@
 package main;
 
 import components.Client;
+import components.Account;
+import components.Client;
+import components.CurrentAccount;
+import components.SavingsAccount;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -12,6 +16,12 @@ public class Main {
         
         // Utiliser une méthode pour afficher le contenu du tableau
         displayClients(clients);
+        
+        // Déclarer un tableau de comptes et le charger à l'aide d'une méthode
+        Account[] accounts = generateAccountArray(6, generateClientArray(3));
+
+        // Utiliser une méthode pour afficher le contenu du tableau
+        displayAccounts(accounts);
     }
     
     // Méthode pour générer un tableau de clients
@@ -28,5 +38,25 @@ public class Main {
         Arrays.stream(clients)
               .map(Client::toString)
               .forEach(System.out::println);
+    }
+    
+    // Méthode pour générer un tableau de comptes
+    private static Account[] generateAccountArray(int numAccounts, Client[] clients) {
+        Account[] accounts = new Account[numAccounts];
+        for (int i = 0; i < numAccounts; i++) {
+            if (i % 2 == 0) {
+                accounts[i] = new CurrentAccount("Compte courant " + (i + 1), clients[i / 2]);
+            } else {
+                accounts[i] = new SavingsAccount("Compte épargne " + (i + 1), clients[i / 2]);
+            }
+        }
+        return accounts;
+    }
+
+    // Méthode pour afficher le contenu du tableau de comptes
+    private static void displayAccounts(Account[] accounts) {
+        for (Account account : accounts) {
+            System.out.println(account.toString());
+        }
     }
 }
