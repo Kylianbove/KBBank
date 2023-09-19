@@ -14,7 +14,7 @@ public class Main {
         displayClients(clients);
     }
     
-    // Méthode pour générer un tableau de clients de test
+    // Méthode pour générer un tableau de clients
     private static Client[] generateClientArray(int numClients) {
         Client[] clients = new Client[numClients];
         for (int i = 0; i < numClients; i++) {
