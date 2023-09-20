@@ -10,11 +10,11 @@ import components.Credit;
 import components.Transfert;
 import java.time.LocalDate;
 import java.util.*;
-
-
+//import org.json.*;
 
 public class Main {
     public static void main(String[] args) {
+    	
         // Déclarer un tableau de clients et le charger à l'aide d'une méthode
         Client[] clients = generateClientArray(3);
         
@@ -40,8 +40,7 @@ public class Main {
         displayAccountTable(accountTable);
         
         
-
-
+ 
     }
     
     // Méthode pour générer un tableau de clients
@@ -156,5 +155,9 @@ public class Main {
 
         
     }
+    
+  
+    
+    
 
 }

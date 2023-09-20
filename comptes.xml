@@ -1,0 +1,22 @@
+<accounts>
+    <account>
+        <label>Compte courant 1</label>
+        <balance>0</balance>
+        <accountNumber>1</accountNumber>
+        <client>
+            <name>Nom 1</name>
+            <firstName>Prénom 1</firstName>
+            <clientNumber>1</clientNumber>
+        </client>
+    </account>
+    <account>
+        <label>Compte épargne 2</label>
+        <balance>0</balance>
+        <accountNumber>2</accountNumber>
+        <client>
+            <name>Nom 2</name>
+            <firstName>Prénom 2</firstName>
+            <clientNumber>2</clientNumber>
+        </client>
+    </account>
+</accounts>

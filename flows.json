@@ -1,0 +1,35 @@
+[
+    {
+        "comment": "Débit de 50€ depuis le compte n°1",
+        "identifier": 1,
+        "amount": 50.0,
+        "targetAccountNumber": 1,
+        "effect": true,
+        "date": "2023-09-21"
+    },
+    {
+        "comment": "Crédit de 100.50€ sur tous les comptes courants",
+        "identifier": 2,
+        "amount": 100.50,
+        "targetAccountNumber": -1,
+        "effect": true,
+        "date": "2023-09-21"
+    },
+    {
+        "comment": "Crédit de 1500€ sur tous les comptes d'épargne",
+        "identifier": 3,
+        "amount": 1500.0,
+        "targetAccountNumber": -1,
+        "effect": true,
+        "date": "2023-09-21"
+    },
+    {
+        "comment": "Transfert de 50€ du compte n°1 au compte n°2",
+        "identifier": 4,
+        "amount": 50.0,
+        "sourceAccountNumber": 1,
+        "targetAccountNumber": 2,
+        "effect": true,
+        "date": "2023-09-21"
+    }
+]
