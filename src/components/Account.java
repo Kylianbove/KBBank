@@ -1,4 +1,5 @@
 package components;
+import components.Flow;
 
 //1.2.1 Creation of the account class
 public abstract class Account {
@@ -27,9 +28,33 @@ public abstract class Account {
         return balance;
     }
 
-    public void setBalance(double balance) {
-        this.balance = balance;
+    public void setBalance(Flow flow) {
+        if (flow instanceof Credit) {
+            Credit credit = (Credit) flow;
+            if (credit.isEffect()) {
+                // Si c'est un crédit effectif, ajoutez le montant au solde
+                this.balance += credit.getAmount();
+            }
+        } else if (flow instanceof Debit) {
+            Debit debit = (Debit) flow;
+            if (debit.isEffect()) {
+                // Si c'est un débit effectif, soustrayez le montant du solde
+                this.balance -= debit.getAmount();
+            }
+        } else if (flow instanceof Transfert) {
+            Transfert transfert = (Transfert) flow;
+            if (transfert.isEffect()) {
+                if (transfert.getSourceAccountNumber() == this.accountNumber) {
+                    // Si c'est un transfert émis depuis ce compte, soustrayez le montant du solde
+                    this.balance -= transfert.getAmount();
+                } else if (transfert.getTargetAccountNumber() == this.accountNumber) {
+                    // Si c'est un transfert reçu sur ce compte, ajoutez le montant au solde
+                    this.balance += transfert.getAmount();
+                }
+            }
+        }
     }
+
 
     public int getAccountNumber() {
         return accountNumber;
@@ -39,8 +64,7 @@ public abstract class Account {
         this.accountNumber = accountNumber;
     }
 
-    // Méthode abstraite pour modifier le solde en fonction du type de flux
-    public abstract void modifyBalance(Flow flow);
+
 
     @Override
     public String toString() {

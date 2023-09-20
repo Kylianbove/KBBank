@@ -9,13 +9,8 @@ import components.Debit;
 import components.Credit;
 import components.Transfert;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.stream.Collectors;
-import java.util.Hashtable;
+import java.util.*;
+
 
 
 public class Main {
@@ -35,17 +30,16 @@ public class Main {
         // Créer la Hashtable et la remplir avec les comptes
         Hashtable<Integer, Account> accountTable = createAccountTable(accounts);
         
+        // Créez un tableau de flux
+        List<Flow> flows = generateFlows();
+        
+        // Mettez à jour les soldes des comptes en fonction des flux
+        updateAccountBalances(flows, accountTable);
+        
         // Utiliser une méthode pour afficher le contenu de la Hashtable
         displayAccountTable(accountTable);
         
-        // Créez un tableau de flux
-        List<Flow> flows = new ArrayList<>();
-
-        // Chargez le tableau avec les flux spécifiés
-        flows.add(new Debit("Débit de 50€ depuis le compte n°1", 1, 50, 1, true, getFutureDate(2)));
-        flows.add(new Credit("Crédit de 100.50€ sur tous les comptes courants", 2, 100.50, -1, true, getFutureDate(2)));
-        flows.add(new Credit("Crédit de 1500€ sur tous les comptes d'épargne", 3, 1500, -1, true, getFutureDate(2)));
-        flows.add(new Transfert("Transfert de 50€ du compte n°1 au compte n°2", 4, 50, 1, 2, true, getFutureDate(2)));
+        
 
 
     }
@@ -107,7 +101,15 @@ public class Main {
                     });
     }
     
-    
+	// Méthode pour générer un tableau de flux
+    private static List<Flow> generateFlows() {
+        List<Flow> flows = new ArrayList<>();
+        flows.add(new Debit("Débit de 50€ depuis le compte n°1", 1, 50, 1, true, getFutureDate(2)));
+        flows.add(new Credit("Crédit de 100.50€ sur tous les comptes courants", 2, 100.50, -1, true, getFutureDate(2)));
+        flows.add(new Credit("Crédit de 1500€ sur tous les comptes d'épargne", 3, 1500, -1, true, getFutureDate(2)));
+        flows.add(new Transfert("Transfert de 50€ du compte n°1 au compte n°2", 4, 50, 1, 2, true, getFutureDate(2)));
+        return flows;
+    }
  
     // Méthode pour obtenir la date future en ajoutant un certain nombre de jours à la date actuelle
     private static String getFutureDate(int daysToAdd) {
@@ -116,5 +118,43 @@ public class Main {
         return futureDate.toString();
     }
     
+    // Méthode pour mettre à jour les soldes des comptes en fonction des flux
+    private static void updateAccountBalances(List<Flow> flows, Map<Integer, Account> accountMap) {
+        for (Flow flow : flows) {
+        	// Traitez les flux de crédit qui concernent tous les comptes courants ou d'épargne
+            if (flow instanceof Credit && flow.getTargetAccountNumber() == -1) {
+                // Obtenez le type de compte cible depuis le commentaire du flux
+                String comment = flow.getComment().toLowerCase();
+                
+                // Obtenez la liste de tous les comptes
+                Collection<Account> accounts = accountMap.values();
+
+                // Mettez à jour le solde de chaque compte en fonction du type de compte
+                for (Account account : accounts) {
+                    if ((account instanceof CurrentAccount && comment.contains("courant")) ||
+                        (account instanceof SavingsAccount && comment.contains("épargne"))) {
+                        account.setBalance(flow);
+                    }
+                }
+            } else {
+                Account account = accountMap.get(flow.getTargetAccountNumber());
+                if (account != null) {
+                    // Mettez à jour le solde du compte en fonction du flux
+                    account.setBalance(flow);
+                }
+            }
+        }
+
+        // Vérifiez s'il y a des comptes avec un solde négatif
+        boolean hasNegativeBalance = accountMap.values().stream()
+                .anyMatch(account -> account.getBalance() < 0);
+
+        // Affichez un message si des comptes ont un solde négatif
+        if (hasNegativeBalance) {
+            System.out.println("Attention : Certains comptes ont un solde négatif !");
+        }
+
+        
+    }
 
 }
