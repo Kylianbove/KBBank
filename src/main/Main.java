@@ -72,13 +72,13 @@ public class Main {
         
         String xmlFilePath = "accounts.xml";
 
-        // Load accounts from the XML file
+        // Charger les comptes à partir du fichier XML
         Account[] accounts2 = loadAccountsFromXML(xmlFilePath);
 
-        // Create a Hashtable of accounts
+        //  Créer la Hashtable et la remplir avec les comptes
         Hashtable<Integer, Account> accountTable2 = createAccountTable(accounts2);
 
-        // Display the accounts in ascending order of balance
+        // Afficher les comptes par ordre croissant de solde
         displayAccountTable(accountTable2);
     }
     
@@ -240,7 +240,7 @@ public class Main {
         }
     }
     
- // Method to load accounts from an XML file and return an array
+    // Méthode pour charger des comptes à partir d'un fichier XML et renvoyer un tableau
     private static Account[] loadAccountsFromXML(String filePath) {
         try {
             File xmlFile = new File(filePath);
@@ -262,11 +262,11 @@ public class Main {
                 String clientFirstName = accountNode.getElementsByTagName("firstName").item(0).getTextContent();
                 int clientNumber = Integer.parseInt(accountNode.getElementsByTagName("clientNumber").item(0).getTextContent());
 
-                // Create a Client object
+                // Créer un objet Client
                 Client client = new Client(clientName, clientFirstName);
                 client.setNumeroClient(clientNumber);
 
-                // Determine the account type based on the label
+                // Déterminer le type de compte en fonction du libellé
                 Account account;
                 if (label.contains("Compte courant")) {
                     account = new CurrentAccount(label, client);
@@ -280,7 +280,7 @@ public class Main {
                 accountArrayList.add(account);
             }
 
-            // Convert the list of accounts to an array
+            //Convertir la liste des comptes en tableau
             return accountArrayList.toArray(new Account[0]);
         } catch (Exception e) {
             e.printStackTrace();
