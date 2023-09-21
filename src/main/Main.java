@@ -8,9 +8,24 @@ import components.Flow;
 import components.Debit;
 import components.Credit;
 import components.Transfert;
+
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.w3c.dom.*;
+import org.xml.sax.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
-//import org.json.*;
+import java.io.File;
+
+import javax.xml.parsers.*;
+
+
 
 public class Main {
     public static void main(String[] args) {
@@ -21,11 +36,15 @@ public class Main {
         // Utiliser une méthode pour afficher le contenu du tableau
         displayClients(clients);
         
+        
+        
         // Déclarer un tableau de comptes et le charger à l'aide d'une méthode
         Account[] accounts = generateAccountArray(6, generateClientArray(3));
 
         // Utiliser une méthode pour afficher le contenu du tableau
         displayAccounts(accounts);
+        
+        
         
         // Créer la Hashtable et la remplir avec les comptes
         Hashtable<Integer, Account> accountTable = createAccountTable(accounts);
@@ -40,7 +59,27 @@ public class Main {
         displayAccountTable(accountTable);
         
         
- 
+        // Charger les données à partir des fichiers JSON
+        Flow[] flows2 = loadFlowsFromJSON(Paths.get("flows.json"));
+        
+        //Afficher les flux chargés à partir du fichier JSON
+        System.out.println("Flows from JSON:");
+        for (Flow flow2 : flows2) {
+            System.out.println(flow2.toString());
+        }
+        
+        
+        
+        String xmlFilePath = "accounts.xml";
+
+        // Load accounts from the XML file
+        Account[] accounts2 = loadAccountsFromXML(xmlFilePath);
+
+        // Create a Hashtable of accounts
+        Hashtable<Integer, Account> accountTable2 = createAccountTable(accounts2);
+
+        // Display the accounts in ascending order of balance
+        displayAccountTable(accountTable2);
     }
     
     // Méthode pour générer un tableau de clients
@@ -120,15 +159,15 @@ public class Main {
     // Méthode pour mettre à jour les soldes des comptes en fonction des flux
     private static void updateAccountBalances(List<Flow> flows, Map<Integer, Account> accountMap) {
         for (Flow flow : flows) {
-        	// Traitez les flux de crédit qui concernent tous les comptes courants ou d'épargne
+        	// Traiter les flux de crédit qui concernent tous les comptes courants ou d'épargne
             if (flow instanceof Credit && flow.getTargetAccountNumber() == -1) {
-                // Obtenez le type de compte cible depuis le commentaire du flux
+                // Obtener le type de compte cible depuis le commentaire du flux
                 String comment = flow.getComment().toLowerCase();
                 
-                // Obtenez la liste de tous les comptes
+                // Obtener la liste de tous les comptes
                 Collection<Account> accounts = accountMap.values();
 
-                // Mettez à jour le solde de chaque compte en fonction du type de compte
+                // Mettre à jour le solde de chaque compte en fonction du type de compte
                 for (Account account : accounts) {
                     if ((account instanceof CurrentAccount && comment.contains("courant")) ||
                         (account instanceof SavingsAccount && comment.contains("épargne"))) {
@@ -138,17 +177,17 @@ public class Main {
             } else {
                 Account account = accountMap.get(flow.getTargetAccountNumber());
                 if (account != null) {
-                    // Mettez à jour le solde du compte en fonction du flux
+                    // Mettre à jour le solde du compte en fonction du flux
                     account.setBalance(flow);
                 }
             }
         }
 
-        // Vérifiez s'il y a des comptes avec un solde négatif
+        // Vérifier s'il y a des comptes avec un solde négatif
         boolean hasNegativeBalance = accountMap.values().stream()
                 .anyMatch(account -> account.getBalance() < 0);
 
-        // Affichez un message si des comptes ont un solde négatif
+        // Afficher un message si des comptes ont un solde négatif
         if (hasNegativeBalance) {
             System.out.println("Attention : Certains comptes ont un solde négatif !");
         }
@@ -156,7 +195,99 @@ public class Main {
         
     }
     
-  
+    // Méthode pour charger les flux à partir d'un fichier JSON
+    private static Flow[] loadFlowsFromJSON(Path filePath) {
+        try {
+            String jsonContent = new String(Files.readAllBytes(filePath));
+            JSONArray jsonArray = new JSONArray(jsonContent);
+            Flow[] flows = new Flow[jsonArray.length()];
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                // extraire les valeurs nécessaires du JSONObject
+                String comment = jsonObject.getString("comment");
+                int identifier = jsonObject.getInt("identifier");
+                double amount = jsonObject.getDouble("amount");
+                int targetAccountNumber = jsonObject.getInt("targetAccountNumber");
+                boolean effect = jsonObject.getBoolean("effect");
+                String date = jsonObject.getString("date");
+
+                // Determiner le type de flux en fonction de comment ou d'autres critères
+                Flow flow;
+
+                // si comment contient "Transfert", utiliser la classe Transfert
+                if (comment.contains("Transfert")) {
+                    int sourceAccountNumber = jsonObject.getInt("sourceAccountNumber");
+                    flow = new Transfert(comment, identifier, amount, sourceAccountNumber, targetAccountNumber, effect, date);
+                }
+                // Si comment contient "Débit", utiliser la classe Debit
+                else if (comment.contains("Débit")) {
+                    flow = new Debit(comment, identifier, amount, targetAccountNumber, effect, date);
+                }
+                // Sinon, par défaut, utiliser la classe Credit
+                else {
+                    flow = new Credit(comment, identifier, amount, targetAccountNumber, effect, date);
+                }
+
+                flows[i] = flow;
+            }
+
+            return flows;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Flow[0]; // Retourner un tableau vide en cas d'erreur
+        }
+    }
+    
+ // Method to load accounts from an XML file and return an array
+    private static Account[] loadAccountsFromXML(String filePath) {
+        try {
+            File xmlFile = new File(filePath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+
+            doc.getDocumentElement().normalize();
+            NodeList accountList = doc.getElementsByTagName("account");
+
+            List<Account> accountArrayList = new ArrayList<>();
+
+            for (int temp = 0; temp < accountList.getLength(); temp++) {
+                Element accountNode = (Element) accountList.item(temp);
+                String label = accountNode.getElementsByTagName("label").item(0).getTextContent();
+                double balance = Double.parseDouble(accountNode.getElementsByTagName("balance").item(0).getTextContent());
+                int accountNumber = Integer.parseInt(accountNode.getElementsByTagName("accountNumber").item(0).getTextContent());
+                String clientName = accountNode.getElementsByTagName("name").item(0).getTextContent();
+                String clientFirstName = accountNode.getElementsByTagName("firstName").item(0).getTextContent();
+                int clientNumber = Integer.parseInt(accountNode.getElementsByTagName("clientNumber").item(0).getTextContent());
+
+                // Create a Client object
+                Client client = new Client(clientName, clientFirstName);
+                client.setNumeroClient(clientNumber);
+
+                // Determine the account type based on the label
+                Account account;
+                if (label.contains("Compte courant")) {
+                    account = new CurrentAccount(label, client);
+                } else {
+                    account = new SavingsAccount(label, client);
+                }
+
+                account.setAccountNumber(accountNumber);
+                account.setBalance(balance);
+
+                accountArrayList.add(account);
+            }
+
+            // Convert the list of accounts to an array
+            return accountArrayList.toArray(new Account[0]);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+       
     
     
 

@@ -1,0 +1,63 @@
+<accounts xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="accounts.xsd">
+    <account>
+        <label>Compte courant 1</label>
+        <balance>100</balance>
+        <accountNumber>1</accountNumber>
+        <client>
+            <name>Nom 1</name>
+            <firstName>Prénom 1</firstName>
+            <clientNumber>1</clientNumber>
+        </client>
+    </account>
+    <account>
+        <label>Compte épargne 2</label>
+        <balance>500</balance>
+        <accountNumber>2</accountNumber>
+        <client>
+            <name>Nom 1</name>
+            <firstName>Prénom 1</firstName>
+            <clientNumber>1</clientNumber>
+        </client>
+    </account>
+    <account>
+        <label>Compte courant 3</label>
+        <balance>200</balance>
+        <accountNumber>3</accountNumber>
+        <client>
+            <name>Nom 2</name>
+            <firstName>Prénom 2</firstName>
+            <clientNumber>2</clientNumber>
+        </client>
+    </account>
+    <account>
+        <label>Compte épargne 4</label>
+        <balance>800</balance>
+        <accountNumber>4</accountNumber>
+        <client>
+            <name>Nom 2</name>
+            <firstName>Prénom 2</firstName>
+            <clientNumber>2</clientNumber>
+        </client>
+    </account>
+	<account>
+        <label>Compte courant 5</label>
+        <balance>350</balance>
+        <accountNumber>5</accountNumber>
+        <client>
+            <name>Nom 3</name>
+            <firstName>Prénom 3</firstName>
+            <clientNumber>3</clientNumber>
+        </client>
+    </account>
+    <account>
+        <label>Compte épargne 6</label>
+        <balance>850</balance>
+        <accountNumber>6</accountNumber>
+        <client>
+            <name>Nom 3</name>
+            <firstName>Prénom 3</firstName>
+            <clientNumber>3</clientNumber>
+        </client>
+    </account>
+ </accounts>

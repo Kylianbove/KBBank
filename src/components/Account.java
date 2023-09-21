@@ -54,7 +54,9 @@ public abstract class Account {
             }
         }
     }
-
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
 
     public int getAccountNumber() {
         return accountNumber;

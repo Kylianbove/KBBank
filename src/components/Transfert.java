@@ -15,4 +15,18 @@ public class Transfert extends Flow {
     public int getSourceAccountNumber() {
         return sourceAccountNumber;
     }
+    
+    @Override
+    public String toString() {
+        return "Transfert{" +
+                "comment='" + getComment() + '\'' +
+                ", identifier=" + getIdentifier() +
+                ", amount=" + getAmount() +
+                ", sourceAccountNumber=" + getSourceAccountNumber() +
+                ", targetAccountNumber=" + getTargetAccountNumber() +
+                ", effect=" + isEffect() +
+                ", date='" + getDate() + '\'' +
+                '}';
+    }
+
 }
